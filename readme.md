@@ -1,18 +1,18 @@
 #Kuwo Music Search & Download
 ##Usage
 ###search:
-####$ kuwo -k kara -p 1 -r 10
->[01] 3746891 | Kara | Mr. | Best Girls | 03:11
->[02] 540590 | Kara | Wanna | Revolution | 03:07
->[03] 12992703 | Kara | STEP | Kara 3rd Album Step | 03:23
->[04] 28456546 | Kara | Honey |  | 03:15
->[05] 657273 | Kara | Lupin | Lupin | 03:12
->[06] 1915519 | Kara | Pandora | Pandora | 03:13
->[07] 19441750 | Kara | Cupid | 카라(KARA) 7th Mini Album ’In Love’ | 03:25
->[08] 3463271 | Kara | Damaged Lady | Full Bloom | 03:07
->[09] 861575 | Kara | Mister | Girl’s Talk (Regular Edition) | 03:14
->[10] 542593 | Kara | Alone(女 Ver.) | 我的女孩 O.S.T | 03:35
+####$ kuwo -k "kill this love" -p 1 -r 10
+>[01] 67149058 | BLACKPINK | Kill This Love | KILL THIS LOVE | 03:09
+>[02] 67765975 | Trinity F | Kill This Love(K-Pop Edition， Tribute to Blackpink) |  | 03:07
+>[03] 67962597 | JANNY | Kill This Love |  | 03:08
+>[04] 67901302 | 凡仔 | Kill This Love(Cover BLACKPINK) |  | 03:08
+>[05] 67969888 | Trinity F | Kill This Love (K-Pop Edition， Tribute to Blackpink) | Kill This Love | 03:07
+>[06] 67988587 | Victory小胜利 | KILL THIS LOVE |  | 03:09
+>[07] 68483610 | Piano Dreamers | Kill This Love((Instrumental)) | Top 20 Hits April 2019 (Instrumental) | 03:10
+>[08] 68132540 | Laura Buitrago | Kill This Love | Fake Love(Cover En Español) | 03:06
+>[09] 38962493 | Epik High | Kill This Love | 99 | 03:53
+>[10] 69067926 | SLK & Friends | Kill This Love | Best of Charts， Vol. 1 | 03:13
 ###downlad:
-####$ kuwo -k kara -rid 540590
->Use result.Url [link_to_mp3](https://other-web-ri01-sycdn.kuwo.cn/ffdfda0630009160d011b57dae05f824/5d05b65f/resource/n1/65/6/2233055956.mp3) to download
->Save to:/$PWD/Kara-Wanna.mp3
+####$ kuwo -k "kill this love" -p 1 -r 10 -rid 67149058
+>Use result.Url [link_to_mp3](https://sp-sycdn.kuwo.cn/ca5e6b148617da503c144149a877e9fd/5d05b8aa/resource/n3/79/54/1595539869.mp3) to download
+>Save to:/$PWD/BLACKPINK-Kill This Love.mp3
