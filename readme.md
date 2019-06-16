@@ -20,9 +20,8 @@ $ kuwo -k "kill this love" -p 1 -r 10
 ```
 ### downlad:
 
-#### $ kuwo -k "kill this love" -p 1 -r 10 -rid 67149058
-
 ```bash
+$ kuwo -k "kill this love" -p 1 -r 10 -rid 67149058
 Use result.Url [link_to_mp3](https://sp-sycdn.kuwo.cn/ca5e6b148617da503c144149a877e9fd/5d05b8aa/resource/n3/79/54/1595539869.mp3) to download
 Save to:/$PWD/BLACKPINK-Kill This Love.mp3
 ```
