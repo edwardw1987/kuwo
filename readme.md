@@ -18,7 +18,7 @@ $ kuwo -k "kill this love" -p 1 -r 10
 [09] 38962493 | Epik High | Kill This Love | 99 | 03:53
 [10] 69067926 | SLK & Friends | Kill This Love | Best of Charts， Vol. 1 | 03:13
 ```
-### downlad:
+### download:
 
 ```bash
 $ kuwo -k "kill this love" -p 1 -r 10 -rid 67149058
