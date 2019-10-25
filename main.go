@@ -59,12 +59,19 @@ func check(err error) {
 	}
 }
 
-func (this *Client) Get(path string, args ...interface{}) ([]byte, error) {
+func (this *Client) Get(path, referer string, args ...interface{}) ([]byte, error) {
 	url := fmt.Sprintf(path, args...)
 	if !strings.HasPrefix(url, "http") {
 		url = ConcatUrl(Endpoint, url)
 	}
-	resp, err := http.Get(url)
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	check(err)
+	if referer != "" {
+		req.Header.Add("Referer", referer)
+	}
+	resp, err := client.Do(req)
 	check(err)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -74,7 +81,8 @@ func (this *Client) Get(path string, args ...interface{}) ([]byte, error) {
 func (this *Client) SearchMusicBykeyWord(key string, pageNum, rowNum int) []*MusicInfo {
 	/*GET Music List*/
 	path := "/api/www/search/searchMusicBykeyWord?key=%s&pn=%d&rn=%d"
-	respBytes, err := this.Get(path, url.QueryEscape(key), pageNum, rowNum)
+	referer := fmt.Sprintf("http://www.kuwo.cn/search/list?key=%s", url.QueryEscape(key))
+	respBytes, err := this.Get(path, referer, url.QueryEscape(key), pageNum, rowNum)
 	check(err)
 	searchKeyRes := new(SearchKeyReponse)
 	json.Unmarshal(respBytes, searchKeyRes)
@@ -84,13 +92,13 @@ func (this *Client) SearchMusicBykeyWord(key string, pageNum, rowNum int) []*Mus
 
 func (this *Client) DowloadMusicByInfo(musicInfo *MusicInfo) {
 	path := "/url?format=mp3&rid=%d&response=url&type=convert_url3&br=128kmp3&from=web&t=%s"
-	respBytes, err := this.Get(path, musicInfo.Rid, GetTimeStamp()[:13])
+	respBytes, err := this.Get(path, "", musicInfo.Rid, GetTimeStamp()[:13])
 	check(err)
 	result := new(MusicUrlResponse)
 	json.Unmarshal(respBytes, result)
 
 	fmt.Printf("Use result.Url %s to download\n", result.Url)
-	respBytes, err = this.Get(result.Url)
+	respBytes, err = this.Get(result.Url, "")
 	check(err)
 
 	outputname := fmt.Sprintf("%s-%s.mp3", musicInfo.Artist, musicInfo.Name)
