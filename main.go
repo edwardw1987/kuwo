@@ -59,7 +59,7 @@ func check(err error) {
 	}
 }
 
-func (this *Client) Get(path, referer string, args ...interface{}) ([]byte, error) {
+func (this *Client) Get(path string, reqHeaders map[string]string, args ...interface{}) ([]byte, error) {
 	url := fmt.Sprintf(path, args...)
 	if !strings.HasPrefix(url, "http") {
 		url = ConcatUrl(Endpoint, url)
@@ -68,8 +68,10 @@ func (this *Client) Get(path, referer string, args ...interface{}) ([]byte, erro
 
 	req, err := http.NewRequest("GET", url, nil)
 	check(err)
-	if referer != "" {
-		req.Header.Add("Referer", referer)
+	if reqHeaders != nil {
+		for key, value := range reqHeaders {
+			req.Header.Add(key, value)
+		}
 	}
 	resp, err := client.Do(req)
 	check(err)
@@ -77,12 +79,36 @@ func (this *Client) Get(path, referer string, args ...interface{}) ([]byte, erro
 	body, err := ioutil.ReadAll(resp.Body)
 	return body, err
 }
+func (this *Client) GetUrlCookie(url, name string) string {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	check(err)
+	resp, err := client.Do(req)
+	check(err)
+	m := map[string]string{}
+	for _, cookie := range resp.Cookies() {
+		cookieStr := cookie.String()
+		index := strings.Index(cookieStr, ";")
+		cookieStr = cookieStr[:index]
+		pairs := strings.Split(cookieStr, "=")
+		key, value := pairs[0], pairs[1]
+		m[key] = value
+	}
+	return m[name]
 
+}
 func (this *Client) SearchMusicBykeyWord(key string, pageNum, rowNum int) []*MusicInfo {
 	/*GET Music List*/
+	urlSearchList := "http://www.kuwo.cn/search/list"
+	kw_token := this.GetUrlCookie(urlSearchList, "kw_token")
 	path := "/api/www/search/searchMusicBykeyWord?key=%s&pn=%d&rn=%d"
-	referer := fmt.Sprintf("http://www.kuwo.cn/search/list?key=%s", url.QueryEscape(key))
-	respBytes, err := this.Get(path, referer, url.QueryEscape(key), pageNum, rowNum)
+	referer := fmt.Sprintf("%s?key=%s", urlSearchList, url.QueryEscape(key))
+	reqHeaders := map[string]string{
+		"Cookie":  fmt.Sprintf("kw_token=%s", kw_token),
+		"csrf":    kw_token,
+		"Referer": referer,
+	}
+	respBytes, err := this.Get(path, reqHeaders, url.QueryEscape(key), pageNum, rowNum)
 	check(err)
 	searchKeyRes := new(SearchKeyReponse)
 	json.Unmarshal(respBytes, searchKeyRes)
@@ -92,13 +118,13 @@ func (this *Client) SearchMusicBykeyWord(key string, pageNum, rowNum int) []*Mus
 
 func (this *Client) DowloadMusicByInfo(musicInfo *MusicInfo) {
 	path := "/url?format=mp3&rid=%d&response=url&type=convert_url3&br=128kmp3&from=web&t=%s"
-	respBytes, err := this.Get(path, "", musicInfo.Rid, GetTimeStamp()[:13])
+	respBytes, err := this.Get(path, nil, musicInfo.Rid, GetTimeStamp()[:13])
 	check(err)
 	result := new(MusicUrlResponse)
 	json.Unmarshal(respBytes, result)
 
 	fmt.Printf("Use result.Url %s to download\n", result.Url)
-	respBytes, err = this.Get(result.Url, "")
+	respBytes, err = this.Get(result.Url, nil)
 	check(err)
 
 	outputname := fmt.Sprintf("%s-%s.mp3", musicInfo.Artist, musicInfo.Name)
