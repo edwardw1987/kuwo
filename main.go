@@ -116,23 +116,25 @@ func (this *Client) SearchMusicBykeyWord(key string, pageNum, rowNum int) []*Mus
 
 }
 
-func (this *Client) DowloadMusicByInfo(musicInfo *MusicInfo, name string) {
+func (this *Client) DowloadMusicByInfo(musicInfo *MusicInfo, name string, dl bool) {
 	path := "/url?format=mp3&rid=%d&response=url&type=convert_url3&br=128kmp3&from=web&t=%s"
 	respBytes, err := this.Get(path, nil, musicInfo.Rid, GetTimeStamp()[:13])
 	check(err)
 	result := new(MusicUrlResponse)
 	json.Unmarshal(respBytes, result)
 
-	fmt.Printf("Use result.Url %s to download\n", result.Url)
-	respBytes, err = this.Get(result.Url, nil)
-	check(err)
-	if len(name) == 0 {
-		name = musicInfo.Name
+	fmt.Printf("%s\n", result.Url)
+	if dl {
+		respBytes, err = this.Get(result.Url, nil)
+		check(err)
+		if len(name) == 0 {
+			name = musicInfo.Name
+		}
+		outputname := fmt.Sprintf("%s-%s.mp3", musicInfo.Artist, name)
+		outputpath := filepath.Join(getCurdir(), outputname)
+		fmt.Printf("Save to:%s\n", outputpath)
+		Save(respBytes, outputpath)
 	}
-	outputname := fmt.Sprintf("%s-%s.mp3", musicInfo.Artist, name)
-	outputpath := filepath.Join(getCurdir(), outputname)
-	fmt.Printf("Save to:%s\n", outputpath)
-	Save(respBytes, outputpath)
 
 }
 
@@ -151,6 +153,7 @@ func main() {
 	pagenumPtr := flag.Int("p", 1, "number of page of music list")
 	rownumPtr := flag.Int("r", 20, "number of rows of every page")
 	ridPtr := flag.Int("rid", -1, "id of song")
+	dlPtr := flag.Bool("dl", false, "download mp3 file?")
 	namePtr := flag.String("n", "", "name of song without artist or file-extension")
 	flag.Parse()
 	keyword, pagenum, rownum, rid, name := *keywordPtr, *pagenumPtr, *rownumPtr, *ridPtr, *namePtr
@@ -169,7 +172,9 @@ func main() {
 		}
 	}
 	if rid > 0 {
-		clt.DowloadMusicByInfo(memo[rid], name)
+		if info, ok := memo[rid]; ok {
+			clt.DowloadMusicByInfo(info, name, *dlPtr)
+		}
 	}
 
 }
