@@ -21,6 +21,7 @@ func getCurdir() string {
 }
 
 const Endpoint = "http://www.kuwo.cn"
+const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
 
 type SearchKeyReponse struct {
 	Data *DataField
@@ -101,12 +102,14 @@ func (this *Client) SearchMusicBykeyWord(key string, pageNum, rowNum int) []*Mus
 	/*GET Music List*/
 	urlSearchList := "http://www.kuwo.cn/search/list"
 	kw_token := this.GetUrlCookie(urlSearchList, "kw_token")
+
 	path := "/api/www/search/searchMusicBykeyWord?key=%s&pn=%d&rn=%d"
 	referer := fmt.Sprintf("%s?key=%s", urlSearchList, url.QueryEscape(key))
 	reqHeaders := map[string]string{
 		"Cookie":  fmt.Sprintf("kw_token=%s", kw_token),
 		"csrf":    kw_token,
 		"Referer": referer,
+		"User-Agent": UA,
 	}
 	respBytes, err := this.Get(path, reqHeaders, url.QueryEscape(key), pageNum, rowNum)
 	check(err)
